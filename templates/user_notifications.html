@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Notifications</h2>
+    <ul class="list-group ">
+        {% for notification in notifications %}
+        <li class="list-group-item mt-3 mb-3  {% if not notification.read %}bg-warning{% endif %}">
+            <p>{{ notification.message }}</p>
+            <p><small>Created at: {{ notification.created_at }}</small></p>
+            {% if not notification.read %}
+                <a href="{% url 'mark-as-read' notification.id %}" class="btn btn-success btn-sm">Mark as Read</a>
+            {% endif %}
+        </li>
+        {% empty %}
+        <li class="list-group-item">No notifications.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

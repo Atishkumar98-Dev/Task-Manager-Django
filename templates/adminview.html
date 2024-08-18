@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<style>
+    .bg-orange{
+        background-color: rgb(233, 81, 11);
+    }
+    .bg-warning{
+        background-color: #03346E !important;
+    }
+    .bg-success{
+        background-color: #0A6847 !important;
+    }
+    .card-body{
+        border-top: 1px solid white;
+    }
+    .card{
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+        border: none;
+        transition: all ease-in-out .75s;
+    }
+    .card:hover{
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+        border: none;
+        transition: all ease-in-out .55s;
+    }
+</style>
+<div class="container">
+
+    <!-- Search and Filter Form -->
+    
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Total Tasks</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_task }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Resolved Tasks</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_successful }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Pending Tasks</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_pending }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-header">Assigned Tasks</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_assigned }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Not Assigned</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_not_assigned }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Reopened</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_reopen }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white  bg-orange mb-3">
+                <div class="card-header">Acknowledged</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_acknowledged }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">Closed</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ count_closed }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search tasks..." value="{{ search_query }}">
+            <div class="input-group-append">
+                <button class="btn btn-primary mx-4" type="submit">Search</button>
+            </div>
+        </div>
+        <div class="mt-3">
+            <label for="status-filter">Filter by status:</label>
+            <select name="status" id="status-filter" class="form-control">
+                <option value="">All</option>
+                <option value="Resolved" {% if status_filter == 'Resolved' %}selected{% endif %}>Resolved</option>
+                <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Reopened" {% if status_filter == 'Reopened' %}selected{% endif %}>Reopened</option>
+                <option value="Closed" {% if status_filter == 'Closed' %}selected{% endif %}>Closed</option>
+                <option value="Not Assigned" {% if status_filter == 'None' %}selected{% endif %}>Not Assigned</option>
+                <option value="Acknowledged" {% if status_filter == 'Acknowledged' %}selected{% endif %}>Acknowledged</option>
+            </select>
+        </div>
+    </form>
+    <!-- User-wise Task Count -->
+    <h3>User-wise Task Count</h3>
+    <ul class="list-group mb-4">
+        {% for user in user_task_counts %}
+        <li class="list-group-item">
+            {{ user.email }} : {{ user.task_count }} tasks
+        </li>
+        {% empty %}
+        <li class="list-group-item">No users found.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Task List -->
+    {% for task in all_tasks %}
+    <div class="card mt-5 mb-4">
+        <div class="card-header">
+            Task Details
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ task.title }}</h5>
+            <p class="card-text">{{ task.description }}</p>
+            <p><strong>Due Date:</strong> {{ task.due_date }}</p>
+            <p><strong>Priority:</strong> {{ task.get_priority_display }}</p>
+            <p><strong>Status:</strong> {{ task.get_status_display }}</p>
+            <p><strong>Assigned to:</strong> {{ task.assigned_to }}</p>
+            <a href="{% url 'task-update' task.pk %}" class="btn btn-outline-primary">Edit</a>
+            <a href="{% url 'task-delete' task.pk %}" class="btn btn-outline-danger">Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

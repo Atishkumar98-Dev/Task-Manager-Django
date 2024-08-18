@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Detail{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h2>Task Details</h2>
+    <p><strong> Task ID : </strong> {{ task.uuid }}</p>
+    <p><strong>Title:</strong> {{ task.title }}</p>
+    <p><strong>Description:</strong> {{ task.description }}</p>
+    <p><strong>Status:</strong> {{ task.get_status_display }}</p>
+    <p><strong>Due Date:</strong> {{ task.due_date }}</p>
+    <p><strong>Priority:</strong> {{ task.get_priority_display }}</p>
+    <p><strong>Assigned to:</strong> {{ task.assigned_to }}</p>
+
+    <!-- Attachments Section -->
+    <h3>Attachments</h3>
+    <ul class="list-group mb-4">
+        {% if attachments %}
+            {% for attachment in attachments %}
+            <li class="list-group-item">
+                <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.file.name }}</a>
+                (Uploaded at: {{ attachment.uploaded_at }})
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">No attachments found.</li>
+        {% endif %}
+    </ul>
+    <a href="{% url 'add-attachment' task.pk %}" class="btn btn-primary mb-3">Add Attachment</a>
+
+    <!-- Comments Section -->
+    <h3>Comments</h3>
+    <ul class="list-group mb-4">
+        {% if comments %}
+            {% for comment in comments %}
+            <li class="list-group-item">
+                <strong>{{ comment.author.email }}:</strong> {{ comment.content }} 
+                (Posted at: {{ comment.created_at }})
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">No comments found.</li>
+        {% endif %}
+    </ul>
+    <a href="{% url 'add-comment' task.pk %}" class="btn btn-primary mb-3">Add Comment</a>
+
+    <!-- Notifications Section -->
+    <h3>Notifications</h3>
+    <ul class="list-group mb-4">
+        {% if notifications %}
+            {% for notification in notifications %}
+            <li class="list-group-item">
+                {{ notification.message }} (Created at: {{ notification.created_at }})
+                {% if not notification.read %}<span class="badge badge-warning">Unread</span>{% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">No notifications found.</li>
+        {% endif %}
+    </ul>
+    <a href="{% url 'send-notification' task.pk %}" class="btn btn-primary mb-3">Send Notification</a>
+
+    <!-- Back to Task List -->
+</div>
+<a href="{% url 'task-list' %}" class="btn btn-secondary mt-4">Back to Task List</a>
+{% endblock %}
